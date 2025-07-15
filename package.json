@@ -1,6 +1,6 @@
 {
   "name": "kimi-code",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "A CLI tool that starts anthropic-proxy with Kimi model and runs claude-code",
   "main": "index.js",
   "bin": {
@@ -17,6 +17,7 @@
   },
   "files": [
     "index.js",
+    "proxy.js",
     "README.md",
     "package.json"
   ],
