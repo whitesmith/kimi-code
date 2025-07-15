@@ -315,22 +315,36 @@ const start = async (port = 3000, options = {}) => {
       const decoder = new TextDecoder('utf-8')
       const reader = openaiResponse.body.getReader()
       let done = false
+      let buffer = '' // Buffer to accumulate partial chunks
+      let incompleteDataLine = '' // Buffer for incomplete data: lines
 
       while (!done && !connectionClosed) {
         const { value, done: doneReading } = await reader.read()
         done = doneReading
         if (value && !connectionClosed) {
-          const chunk = decoder.decode(value)
+          const chunk = decoder.decode(value, { stream: true })
           debug('OpenAI response chunk:', chunk)
-          // OpenAI streaming responses are typically sent as lines prefixed with "data: "
-          const lines = chunk.split('\n')
-
+          
+          // Add new chunk to buffer
+          buffer += chunk
+          
+          // Split by lines and process complete lines only
+          const lines = buffer.split('\n')
+          // Keep the last potentially incomplete line in the buffer
+          buffer = lines.pop() || ''
 
           for (const line of lines) {
             if (connectionClosed) break
             const trimmed = line.trim()
             if (trimmed === '' || !trimmed.startsWith('data:')) continue
-            const dataStr = trimmed.replace(/^data:\s*/, '')
+            
+            // Handle incomplete data lines by accumulating them
+            let dataStr = trimmed.replace(/^data:\s*/, '')
+            if (incompleteDataLine) {
+              dataStr = incompleteDataLine + dataStr
+              incompleteDataLine = ''
+            }
+            
             if (dataStr === '[DONE]') {
               // Finalize the stream with stop events.
               if (encounteredToolCall) {
@@ -462,7 +476,15 @@ const start = async (port = 3000, options = {}) => {
                 })
               }
             } catch (parseError) {
-              // Skip malformed JSON chunks - this can happen when JSON is split across packets
+              // Check if this is an incomplete JSON object that we should buffer
+              if (parseError.message.includes('Unterminated') || 
+                  parseError.message.includes('Unexpected end') || 
+                  parseError.message.includes('Unexpected token')) {
+                debug('Buffering incomplete JSON:', dataStr)
+                incompleteDataLine = dataStr
+                continue
+              }
+              // Skip other malformed JSON chunks
               debug('Skipping malformed JSON chunk:', dataStr, parseError.message)
               continue
             }
