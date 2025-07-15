@@ -336,6 +336,7 @@ const start = async (port = 3000, options = {}) => {
           for (const line of lines) {
             if (connectionClosed) break
             const trimmed = line.trim()
+            if (!line) continue
             if (trimmed === '' || !trimmed.startsWith('data:')) continue
             
             // Handle incomplete data lines by accumulating them
@@ -344,6 +345,8 @@ const start = async (port = 3000, options = {}) => {
               dataStr = incompleteDataLine + dataStr
               incompleteDataLine = ''
             }
+
+            if (!dataStr) continue
             
             if (dataStr === '[DONE]') {
               // Finalize the stream with stop events.
