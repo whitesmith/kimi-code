@@ -1,4 +1,39 @@
 {
   "name": "kimi-code",
-  "packageManager": "yarn@4.9.1"
+  "version": "1.0.3",
+  "description": "A CLI tool that starts anthropic-proxy with Kimi model and runs claude-code",
+  "main": "index.js",
+  "bin": {
+    "kimi": "index.js"
+  },
+  "scripts": {
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish",
+    "publish:beta": "npm version prerelease --preid=beta && npm publish --tag beta",
+    "local:install": "npm link",
+    "local:uninstall": "npm unlink -g kimi-code",
+    "clean": "npm cache clean --force"
+  },
+  "files": [
+    "index.js",
+    "README.md",
+    "package.json"
+  ],
+  "dependencies": {
+    "commander": "^11.0.0",
+    "fastify": "^5.2.1",
+    "keytar": "^7.9.0"
+  },
+  "keywords": [
+    "kimi",
+    "anthropic",
+    "proxy",
+    "claude",
+    "cli",
+    "ai",
+    "groq",
+    "moonshot"
+  ],
+  "license": "MIT"
 }
