@@ -56,7 +56,6 @@ kimi --reset-key
 
 - Node.js 14 or higher
 - macOS (for keychain integration)
-- `anthropic-proxy` package (automatically installed via npx)
 - `claude-code` installed and available in PATH
 
 ## Getting a Groq API Key
@@ -69,21 +68,11 @@ kimi --reset-key
 ## How it works
 
 1. Securely retrieves or prompts for your Groq API key
-2. Starts the anthropic-proxy server configured to use Groq API with Kimi model
-3. Sets the ANTHROPIC_BASE_URL environment variable to point to the local proxy
-4. Launches claude-code
-5. When claude-code exits, automatically stops the proxy server
-
-## Environment Variables
-
-The following environment variables are automatically set:
-
-- `OPENROUTER_API_KEY`: Set to your Groq API key
-- `ANTHROPIC_PROXY_BASE_URL`: Set to `api.groq.com/openai/v1`
-- `PORT`: The port the proxy server listens on
-- `REASONING_MODEL`: Set to `moonshotai/kimi-k2-instruct`
-- `COMPLETION_MODEL`: Set to `moonshotai/kimi-k2-instruct`
-- `ANTHROPIC_BASE_URL`: Set for claude-code to use the local proxy
+2. Starts a built-in proxy server that translates Anthropic API calls to Groq API format
+3. Configures the proxy to use Groq's API endpoint (`https://api.groq.com/openai`) with Kimi models
+4. Sets the `ANTHROPIC_BASE_URL` environment variable to point to the local proxy
+5. Launches claude-code with the configured environment
+6. When claude-code exits, automatically stops the proxy server
 
 ## Troubleshooting
 
@@ -100,3 +89,7 @@ If you encounter keychain permission issues, you can:
 ## License
 
 MIT
+
+## Thanks
+
+Anthropic proxy code is based on https://github.com/maxnowack/anthropic-proxy
