@@ -20,6 +20,14 @@
     "README.md",
     "package.json"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whitesmith/kimi-code.git"
+  },
+  "bugs": {
+    "url": "https://github.com/whitesmith/kimi-code/issues"
+  },
+  "homepage": "https://github.com/whitesmith/kimi-code#readme",
   "dependencies": {
     "commander": "^11.0.0",
     "fastify": "^5.2.1",
