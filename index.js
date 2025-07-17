@@ -14,6 +14,7 @@ program
   .description('Start anthropic-proxy with Kimi model and run claude-code')
   .option('-k, --api-key <key>', 'Groq API key (will be stored in keychain)')
   .option('-p, --port <port>', 'Port for the proxy server', '3000')
+  .option('--base-url <url>', 'Base URL for the API endpoint', 'https://api.groq.com/openai')
   .option('--reasoning-model <model>', 'Reasoning model to use', 'moonshotai/kimi-k2-instruct')
   .option('--completion-model <model>', 'Completion model to use', 'moonshotai/kimi-k2-instruct')
   .option('--debug', 'Enable debug logging')
@@ -116,7 +117,7 @@ async function startProxy(apiKey) {
   
   const proxyOptions = {
     key: apiKey,
-    baseUrl: 'https://api.groq.com/openai',
+    baseUrl: options.baseUrl,
     reasoningModel: options.reasoningModel,
     completionModel: options.completionModel,
     debug: options.debug
@@ -167,7 +168,7 @@ async function main() {
     await startProxy(apiKey);
     console.log(`✅ Proxy started on port ${options.port}`);
     console.log(`🤖 Using model: ${options.reasoningModel}`);
-    console.log('🔗 Base URL: https://api.groq.com/openai');
+    console.log(`🔗 Base URL: ${options.baseUrl}`);
     
     // Wait a moment for the proxy to be fully ready
     await new Promise(resolve => setTimeout(resolve, 1000));

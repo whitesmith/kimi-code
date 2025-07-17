@@ -29,6 +29,9 @@ kimi --port 3001
 # With custom models
 kimi --reasoning-model "llama3-70b-8192" --completion-model "llama3-8b-8192"
 
+# With custom base URL (without /v1)
+kimi --base-url https://custom-api-endpoint.com
+
 # Enable debug logging
 kimi --debug
 
@@ -40,6 +43,7 @@ kimi --reset-key
 
 - `-k, --api-key <key>`: Groq API key (will be stored in macOS keychain)
 - `-p, --port <port>`: Port for the proxy server (default: 3000)
+- `--base-url <url>`: Base URL for the API endpoint (default: https://api.groq.com/openai)
 - `--reasoning-model <model>`: Reasoning model to use (default: moonshotai/kimi-k2-instruct)
 - `--completion-model <model>`: Completion model to use (default: moonshotai/kimi-k2-instruct)
 - `--debug`: Enable debug logging
@@ -69,7 +73,7 @@ kimi --reset-key
 
 1. Securely retrieves or prompts for your Groq API key
 2. Starts a built-in proxy server that translates Anthropic API calls to Groq API format
-3. Configures the proxy to use Groq's API endpoint (`https://api.groq.com/openai`) with Kimi models
+3. Configures the proxy to use the specified API endpoint (default: `https://api.groq.com/openai`) with Kimi models
 4. Sets the `ANTHROPIC_BASE_URL` environment variable to point to the local proxy
 5. Launches claude-code with the configured environment
 6. When claude-code exits, automatically stops the proxy server
