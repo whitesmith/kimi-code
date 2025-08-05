@@ -81,9 +81,13 @@ const start = async (port = 3000, options = {}) => {
       // If content is a string, return it directly.
       // If it's an array (of objects with text property), join them.
       const normalizeContent = (content) => {
+        if (!content) return null
         if (typeof content === 'string') return content
         if (Array.isArray(content)) {
-          return content.map(item => item.text).join(' ')
+          return content.map(item => {
+            if (!item) return ''
+            return item?.text || item?.content || item || ''
+          }).join(' ')
         }
         return null
       }
@@ -93,7 +97,8 @@ const start = async (port = 3000, options = {}) => {
       const messages = []
       if (payload.system && Array.isArray(payload.system)) {
         payload.system.forEach(sysMsg => {
-          const normalized = normalizeContent(sysMsg.text || sysMsg.content)
+          if (!sysMsg) return
+          const normalized = normalizeContent(sysMsg?.text || sysMsg?.content || sysMsg)
           if (normalized) {
             messages.push({
               role: 'system',
@@ -105,7 +110,8 @@ const start = async (port = 3000, options = {}) => {
       // Then add user (or other) messages.
       if (payload.messages && Array.isArray(payload.messages)) {
         payload.messages.forEach(msg => {
-          const toolCalls = (Array.isArray(msg.content) ? msg.content : []).filter(item => item.type === 'tool_use').map(toolCall => ({
+          if (!msg) return
+          const toolCalls = (Array.isArray(msg.content) ? msg.content : []).filter(item => item && item.type === 'tool_use').map(toolCall => ({
             id: toolCall.id,
             type: 'function',
             function: {
@@ -122,9 +128,10 @@ const start = async (port = 3000, options = {}) => {
           if (Array.isArray(msg.content)) {
             const toolResults = msg.content.filter(item => item.type === 'tool_result')
             toolResults.forEach(toolResult => {
+              const content = toolResult?.text || toolResult?.content || toolResult
               messages.push({
                 role: 'tool',
-                content: toolResult.text || toolResult.content,
+                content: content,
                 tool_call_id: toolResult.tool_use_id,
               })
             })
