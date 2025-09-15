@@ -44,8 +44,8 @@ kimi --reset-key
 - `-k, --api-key <key>`: Groq API key (will be stored in macOS keychain)
 - `-p, --port <port>`: Port for the proxy server (default: 3000)
 - `--base-url <url>`: Base URL for the API endpoint (default: https://api.groq.com/openai)
-- `--reasoning-model <model>`: Reasoning model to use (default: moonshotai/kimi-k2-instruct)
-- `--completion-model <model>`: Completion model to use (default: moonshotai/kimi-k2-instruct)
+- `--reasoning-model <model>`: Reasoning model to use (default: moonshotai/kimi-k2-instruct-0905)
+- `--completion-model <model>`: Completion model to use (default: moonshotai/kimi-k2-instruct-0905)
 - `--debug`: Enable debug logging
 - `--reset-key`: Reset the stored API key
 

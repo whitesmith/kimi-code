@@ -15,8 +15,8 @@ program
   .option('-k, --api-key <key>', 'Groq API key (will be stored in keychain)')
   .option('-p, --port <port>', 'Port for the proxy server', '3000')
   .option('--base-url <url>', 'Base URL for the API endpoint', 'https://api.groq.com/openai')
-  .option('--reasoning-model <model>', 'Reasoning model to use', 'moonshotai/kimi-k2-instruct')
-  .option('--completion-model <model>', 'Completion model to use', 'moonshotai/kimi-k2-instruct')
+  .option('--reasoning-model <model>', 'Reasoning model to use', 'moonshotai/kimi-k2-instruct-0905')
+  .option('--completion-model <model>', 'Completion model to use', 'moonshotai/kimi-k2-instruct-0905')
   .option('--debug', 'Enable debug logging')
   .option('--reset-key', 'Reset the stored API key')
   .parse();

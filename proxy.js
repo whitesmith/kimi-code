@@ -48,8 +48,8 @@ const start = async (port = 3000, options = {}) => {
     baseUrl: options.baseUrl || 'https://api.groq.com/openai',
     key: options.key,
     models: {
-      reasoning: options.reasoningModel || 'moonshotai/kimi-k2-instruct',
-      completion: options.completionModel || 'moonshotai/kimi-k2-instruct',
+      reasoning: options.reasoningModel || 'moonshotai/kimi-k2-instruct-0905',
+      completion: options.completionModel || 'moonshotai/kimi-k2-instruct-0905',
     },
     maxTokens: options.maxTokens || 16384,
     debug: options.debug || false
@@ -217,7 +217,7 @@ const start = async (port = 3000, options = {}) => {
       // If stream is not enabled, process the complete response.
       if (!openaiPayload.stream) {
         const data = await openaiResponse.json()
-        debug('OpenAI response:', data)
+        debug('OpenAI response:', JSON.stringify(data))
         if (data.error) {
           throw new Error(data.error.message)
         }
@@ -328,6 +328,42 @@ const start = async (port = 3000, options = {}) => {
       while (!done && !connectionClosed) {
         const { value, done: doneReading } = await reader.read()
         done = doneReading
+        
+        // Handle unexpected stream termination
+        if (done && !connectionClosed && isStreamingStarted) {
+          // Stream ended without [DONE] - send proper completion
+          if (encounteredToolCall) {
+            for (const idx in toolCallAccumulators) {
+              sendSSE(reply, 'content_block_stop', {
+                type: 'content_block_stop',
+                index: parseInt(idx, 10)
+              })
+            }
+          } else if (textBlockStarted) {
+            sendSSE(reply, 'content_block_stop', { 
+              type: 'content_block_stop', 
+              index: 0 
+            })
+          }
+          sendSSE(reply, 'message_delta', {
+            type: 'message_delta',
+            delta: { 
+              stop_reason: encounteredToolCall ? 'tool_use' : 'end_turn', 
+              stop_sequence: null 
+            },
+            usage: usage
+              ? { output_tokens: usage.completion_tokens }
+              : { output_tokens: accumulatedContent.split(' ').length + accumulatedReasoning.split(' ').length }
+          })
+          sendSSE(reply, 'message_stop', { type: 'message_stop' })
+          try {
+            reply.raw.end()
+          } catch (error) {
+            // Ignore error if already closed
+          }
+          return
+        }
+        
         if (value && !connectionClosed) {
           const chunk = decoder.decode(value, { stream: true })
           debug('OpenAI response chunk:', chunk)
